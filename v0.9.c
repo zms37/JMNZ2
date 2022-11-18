@@ -17,6 +17,7 @@ char player2[10];
 char bot[3]="bot";
 int player1Start = 0;
 int player2Start = 0;
+int playerOrBot = 0;
 //int botStart = 0;
 clock_t startPlayer;
 clock_t endPlayer;
@@ -212,7 +213,7 @@ void createPlayers(){
    Requires: no paramters required by the method
 Effects: This method outputs the names of the first and second players, prints the who is player 1 and player 2, and assigns token 1 for player 1 and token 2 for player 2.
 */
- if(vsPlayerOrBot() == 1){  
+ if(playerOrBot == 1){  
 
     printf("Player 1 please enter your name: ");
     scanf("%s", player1);
@@ -263,9 +264,10 @@ void startGame(){
     The players make their moves according to their respective turns, and the winner is announced if the conditions of the isWinner function are satisfied. If 
     such conditions are not satisfied and the board is full, the tie function is called, comparing the times of the players, and selects a winner accordingly.
     */
-    vsPlayerOrBot();
+   
+   playerOrBot = vsPlayerOrBot();
     //use vsPlayerOrBot to determine which playing mood 
-    if(vsPlayerOrBot(2) == 1){
+    if(playerOrBot == 1){
         // create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
         createPlayers();
         //determine which turn is it.
@@ -657,7 +659,6 @@ int evaluate(int gameBoard[6][7], int token){
 }
 //boolean function vsPlayerOrBot to take the input if the user wants Player vs Player or Player vs computer.
 int vsPlayerOrBot(){
-    //int vsPlayerOrBot = 0;
     int choice;
     printf("1. Player vs Player\n");
     printf("2. Player vs Computer\n");
