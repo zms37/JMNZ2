@@ -21,6 +21,7 @@ int botStart = 0;
 int playerOrBot = 0;
 int playerToken = 0;
 int botToken = 0;
+//int botStart = 0;
 clock_t startPlayer;
 clock_t endPlayer;
 double playerTime =0;
@@ -664,42 +665,90 @@ int evaluate(int gameBoard[6][7])
     {
         for (int j = 1; j < 8; j++)
         {
-            if (gameBoard[i][j] == 1)
+            if (gameBoard[i][j] == playerToken)
             {
-                if (gameBoard[i][j+1] == 1 && gameBoard[i][j+2] == 1 && gameBoard[i][j+3] == 1)
+                if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken && gameBoard[i][j+3] == playerToken)
                 {
-                    score += -10;
+                    score += 50;
                 }
-                if (gameBoard[i+1][j] == 1 && gameBoard[i+2][j] == 1 && gameBoard[i+3][j] == 1)
+                if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken && gameBoard[i+3][j] == playerToken)
                 {
-                    score += -10;
+                    score += 50;
                 }
-                if (gameBoard[i+1][j+1] == 1 && gameBoard[i+2][j+2] == 1 && gameBoard[i+3][j+3] == 1)
+                if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken && gameBoard[i+3][j+3] == playerToken)
                 {
-                    score += -10;
+                    score += 50;
                 }
-                if (gameBoard[i+1][j-1] == 1 && gameBoard[i+2][j-2] == 1 && gameBoard[i+3][j-3] == 1)
+                if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken && gameBoard[i+3][j-3] == playerToken)
                 {
-                    score += -10;
+                    score += 50;
+                }
+                if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
+                {
+                    score += 20;
+                }
+                if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken)
+                {
+                    score += 20;
+                }
+                if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken)
+                {
+                    score += 20;
+                }
+                if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)
+                {
+                    score += 20;
+                }
+                if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
+                {
+                    score += 20;
+                }
+                if (gameBoard[i+1][j] == playerToken)
+                {
+                    score += 10;
+                }
+                if (gameBoard[i+1][j+1] == playerToken)
+                {
+                    score += 10;
+                }
+                if (gameBoard[i+1][j-1] == playerToken)
+                {
+                    score += 10;
                 }
             }
-            if (gameBoard[i][j] == 2)
+            if (gameBoard[i][j] == botToken)
             {
-                if (gameBoard[i][j+1] == 2 && gameBoard[i][j+2] == 2 && gameBoard[i][j+3] == 2)
+                if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken && gameBoard[i][j+3] == botToken)
                 {
-                    score += 10;
+                    score += 30;
                 }
-                if (gameBoard[i+1][j] == 2 && gameBoard[i+2][j] == 2 && gameBoard[i+3][j] == 2)
+                if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken && gameBoard[i+3][j] == botToken)
                 {
-                    score += 10;
+                    score += 30;
                 }
-                if (gameBoard[i+1][j+1] == 2 && gameBoard[i+2][j+2] == 2 && gameBoard[i+3][j+3] == 2)
+                if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken && gameBoard[i+3][j+3] == botToken)
                 {
-                    score += 10;
+                    score += 30;
                 }
-                if (gameBoard[i+1][j-1] == 2 && gameBoard[i+2][j-2] == 2 && gameBoard[i+3][j-3] == 2)
+                if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken && gameBoard[i+3][j-3] == botToken)
                 {
-                    score += 10;
+                    score += 30;
+                }
+                   if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken && gameBoard[i][j+3] == botToken)
+                {
+                    score += 30;
+                }
+                if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken && gameBoard[i+3][j] == botToken)
+                {
+                    score += 30;
+                }
+                if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken && gameBoard[i+3][j+3] == botToken)
+                {
+                    score += 30;
+                }
+                if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken && gameBoard[i+3][j-3] == botToken)
+                {
+                    score += 30;
                 }
             }
         }
