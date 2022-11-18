@@ -21,7 +21,6 @@ int botStart = 0;
 int playerOrBot = 0;
 int playerToken = 0;
 int botToken = 0;
-//int botStart = 0;
 clock_t startPlayer;
 clock_t endPlayer;
 double playerTime =0;
