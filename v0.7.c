@@ -16,10 +16,7 @@ char player1[10];
 char player2[10];
 int player1Start = 0;
 int player2Start = 0;
-
 //int botStart = 0;
-
-
 clock_t startPlayer;
 clock_t endPlayer;
 double playerTime =0;
@@ -30,10 +27,12 @@ coin flipCoin();
 void display();
 bool isWinner();
 void startGame();
-void playermove();
+void playerVsPlayer();
 void botMove (int gameBoard[6][7], int token);
 int evaluate(int gameBoard[6][7], int token);
 int minimax(int gameBoard[6][7], int depth, bool isMaximizing, int playerToken);
+int vsPlayerOrBot();
+void playerVsBot();
 int main()
 {
     printf("Welcome to Connect Four Game\n a game developed by JMNZ \n \n we hope you enjoy it \n \n");
@@ -206,14 +205,14 @@ void tie(double player1Time, double player2Time)
     }
 }
 // function to create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
-void createPlayers()
+void createPlayers(){
    
    /*
    Requires: no paramters required by the method
 Effects: This method outputs the names of the first and second players, prints the who is player 1 and player 2, and assigns token 1 for player 1 and token 2 for player 2.
 */
-   
-{
+ if(vsPlayerOrBotV == 1){  
+
     printf("Player 1 please enter your name: ");
     scanf("%s", player1);
     printf("\n");
@@ -222,6 +221,27 @@ Effects: This method outputs the names of the first and second players, prints t
     scanf("%s", player2);
     printf("\n");
     printf("\n");
+    printf("%s is player 1\n", player1);
+    printf("%s is player 2\n", player2);
+    printf("\n");
+    printf("\n");
+    printf("Player 1 is token 1\n");
+    printf("Player 2 is token 2\n");
+    printf("\n");
+    printf("\n");
+    }
+    else{
+        printf("Player 1 please enter your name: ");
+        scanf("%s", player1);
+        printf("\n");
+        printf("\n");
+        printf("%s is player 1\n", player1);
+        printf("\n");
+        printf("\n");
+        printf("Player 1 is token 1\n");
+        printf("\n");
+        printf("\n");
+    }
 }
 
 // a function to set the moves for each player and change the tokins in the gameboard accordingly.
@@ -234,7 +254,7 @@ Effects: This method outputs the names of the first and second players, prints t
 //the function sets the winner using the isWinner function and declearing the winner.
 //if the result is tie the function uses the tie function to declear the tie.
 //the function ends when the game is off.
-void startGame()
+void startGame(){
     /*
     Requires: No Direct Parameters to the function, but the global variables player 1 and player 2, representing both players' names, are required.
     
@@ -242,119 +262,205 @@ void startGame()
     The players make their moves according to their respective turns, and the winner is announced if the conditions of the isWinner function are satisfied. If 
     such conditions are not satisfied and the board is full, the tie function is called, comparing the times of the players, and selects a winner accordingly.
     */
-{
+    vsPlayerOrBot();
+    //use vsPlayerOrBot to determine which playing mood 
+    if(vsPlayerOrBotV == 1){
+        // create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
+        createPlayers();
+        //determine which turn is it.
+        int turn = 0;
+        int moves = 0;
+        // set the game to be on.
+        int gameOn = 1;
+        //player 1 and player 2 time.
 
-    // create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
-    createPlayers();
-    //determine which turn is it.
-    int turn = 0;
-    int moves = 0;
-    // set the game to be on.
-    int gameOn = 1;
-    //player 1 and player 2 time.
-
-    int move = 0;
-    // set the truns for the players and save the truns in variables.
-    srand(time(NULL));
-    flipCoin();
-    if (flipCoin() == HEADS)
-    {
-        player1Start = 1;
-        printf("%s is red and %s is yellow.", player1, player2);
-        printf("\n");
-    }
-    else
-    {
-       
-        //botStart = 1;
-        player2Start = 1;
-        printf("%s is red and %s is yellow.", player2, player1);
-        printf("\n");
-    }
-    display(gameBoard);
-    // while the game is on.
-    while (gameOn == 1)
-    {
-        // if the player 1 turn is true.
-        if (player1Start == 1)
+        int move = 0;
+        // set the truns for the players and save the truns in variables.
+        srand(time(NULL));
+        flipCoin();
+        if (flipCoin() == HEADS)
         {
-            playermove(player1, 1);
-            moves++;
-            player1Time +=playerTime;
-            playerTime =0;
-            // set the player 1 turn to be false.
-            //player1Turn = 0;
-            // set the player 2 turn to be true.
-            //player2Turn = 1;
-            if (isWinner(1))
+            player1Start = 1;
+            printf("%s is red and %s is yellow.", player1, player2);
+            printf("\n");
+        }
+        else
+        {
+        
+            
+            player2Start = 1;
+            printf("%s is red and %s is yellow.", player2, player1);
+            printf("\n");
+        }
+        display(gameBoard);
+        // while the game is on.
+        while (gameOn == 1)
+        {
+            // if the player 1 turn is true.
+            if (player1Start == 1)
             {
-                printf("%s won!!!!!!!\n", player1);
-                break;
-            }
+                playerVsPlayer(player1, 1);
+                moves++;
+                player1Time +=playerTime;
+                playerTime =0;
+                // set the player 1 turn to be false.
+                //player1Turn = 0;
+                // set the player 2 turn to be true.
+                //player2Turn = 1;
+                if (isWinner(1))
+                {
+                    printf("%s won!!!!!!!\n", player1);
+                    break;
+                }
 
-            //botMove(gameBoard,playerToken);
-            playermove(player2, 2);
-            moves++;
-            player2Time+=playerTime;
-            playerTime =0;
-            // set the player 2 turn to be false.
-            //player2Turn = 0;
-            // set the player 1 turn to be true.
-            //player1Turn = 1;
-            if (isWinner(2))
+                //botMove(gameBoard,playerToken);
+                playerVsPlayer(player2, 2);
+                moves++;
+                player2Time+=playerTime;
+                playerTime =0;
+                // set the player 2 turn to be false.
+                //player2Turn = 0;
+                // set the player 1 turn to be true.
+                //player1Turn = 1;
+                if (isWinner(2))
+                {
+                    printf("%s won!!!!!!!\n", player2);
+                    break;
+                }
+            }
+            
+            // if the player 2 turn is true.
+            else if (player2Start == 1)
             {
-                printf("%s won!!!!!!!\n", player2);
-                break;
+            // botMove(gameBoard);
+                playerVsPlayer(player2, 1);
+                moves++;
+                player2Time+=playerTime;
+                playerTime =0;
+                // set the player 2 turn to be false.
+                //player2Turn = 0;
+                // set the player 1 turn to be true.
+                //player1Turn = 1;
+                if (isWinner(1))
+                {
+                    printf("%s won!!!!!!!\n", player2);
+                    break;
+                }
+
+
+                playerVsPlayer(player1, 2);
+                moves++;
+                player1Time +=playerTime;
+                playerTime =0;
+                // set the player 1 turn to be false.
+                //player1Turn = 0;
+                // set the player 2 turn to be true.
+                //player2Turn = 1;
+                if (isWinner(2))
+                {
+                    printf("%s won!!!!!!!\n", player1);
+                    break;
+                }
+            }
+            
+            // if the game is a tie.
+            if (moves == 42)
+            {
+                // set the winner using the tie function and declearing the tie.
+                tie(player1Time, player2Time);
+                // set the game to be off.
+                gameOn = 0;
             }
         }
-        
-        // if the player 2 turn is true.
-        else if (player2Start == 1)
+    }
+    else{
+        // create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
+        createPlayers();
+        //determine which turn is it.
+        int turn = 0;
+        int moves = 0;
+        int botStart=0;
+        // set the game to be on.
+        int gameOn = 1;
+        //player 1 and player 2 time.
+
+        int move = 0;
+        // set the truns for the players and save the truns in variables.
+        srand(time(NULL));
+        flipCoin();
+        if (flipCoin() == HEADS)
         {
-           // botMove(gameBoard);
-            playermove(player2, 1);
-            moves++;
-            player2Time+=playerTime;
-            playerTime =0;
-            // set the player 2 turn to be false.
-            //player2Turn = 0;
-            // set the player 1 turn to be true.
-            //player1Turn = 1;
-            if (isWinner(1))
-            {
-                printf("%s won!!!!!!!\n", player2);
-                break;
-            }
-
-
-            playermove(player1, 2);
-            moves++;
-            player1Time +=playerTime;
-            playerTime =0;
-            // set the player 1 turn to be false.
-            //player1Turn = 0;
-            // set the player 2 turn to be true.
-            //player2Turn = 1;
-            if (isWinner(2))
-            {
-                printf("%s won!!!!!!!\n", player1);
-                break;
-            }
+            player1Start = 1;
+            printf("%s is red and %s is yellow.", player1, player2);
+            printf("\n");
         }
-        
-        // if the game is a tie.
-        if (moves == 42)
+        else
         {
-            // set the winner using the tie function and declearing the tie.
-            tie(player1Time, player2Time);
-            // set the game to be off.
-            gameOn = 0;
+        
+            botStart = 1;
+            player2Start = 1;
+            printf("%s is red and %s is yellow.", player2, player1);
+            printf("\n");
+        }
+        display(gameBoard);
+        // while the game is on.
+        while (gameOn == 1)
+        {
+            // if the player 1 turn is true.
+            if (player1Start == 1)
+            {
+                playerVsPlayer(player1, 1);
+                moves++;
+                player1Time +=playerTime;
+                playerTime =0;
+                // set the player 1 turn to be false.
+                //player1Turn = 0;
+                // set the player 2 turn to be true.
+                //player2Turn = 1;
+                if (isWinner(1))
+                {
+                    printf("%s won!!!!!!!\n", player1);
+                    break;
+                }
+
+                botMove(gameBoard,2);
+                moves++;
+                player2Time+=playerTime;
+                playerTime = 0;
+                // set the player 2 turn to be false.
+                //player2Turn = 0;
+                // set the player 1 turn to be true.
+                //player1Turn = 1;
+                if (isWinner(2))
+                {
+                    printf("%s won!!!!!!!\n", player2);
+                    break;
+                }
+            }
+            
+            // if the player 2 turn is true.
+            else if (player2Start == 1)
+            {
+                botMove(gameBoard, 2);
+                moves++;
+                player2Time+=playerTime;
+                playerTime =0;
+                // set the player 2 turn to be false.
+                //player2Turn = 0;
+                // set the player 1 turn to be true.
+                //player1Turn = 1;
+                if (isWinner(1))
+                {
+                    printf("%s won!!!!!!!\n", player2);
+                    break;
+                }
+            }
         }
     }
 }
 
 //function for players turn:
-void playermove(char player[10], int playerToken)
+void playerVsPlayer(char player[10], int playerToken)
     /* 
     Requires: An array of chars of size 10 (String) to represent the name of the player, and the player token assigned to player 1 or player 2 that indicates the
     token number 1 or 2
@@ -533,3 +639,61 @@ int evaluate(int gameBoard[6][7], int token){
     }
     return score;
 }
+//boolean function vsPlayerOrBot to take the input if the user wants Player vs Player or Player vs computer.
+int vsPlayerOrBot(){
+    int vsPlayerOrBotV = 0;
+    int choice;
+    printf("1. Player vs Player\n");
+    printf("2. Player vs Computer\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+    if(choice == 1){
+        return vsPlayerOrBotV =1;
+    }
+    else if(choice == 2){
+        return vsPlayerOrBotV=0;
+    }
+    else{
+        printf("Invalid choice. Please enter 1 or 2\n");
+        vsPlayerOrBot();
+    }
+}
+// a function playerVsBot that functions similarly to PlayerVsPlayer.
+void playerVsBot(int gameBoard[6][7], int playerToken){
+    int column;
+    int i = 0;
+    do
+    {
+        printf("Player %d, enter a column: ", playerToken);
+        scanf("%d", &column);
+        if (column < 1 || column > 7)
+        {
+            printf("You have to enter a number between 1 and 7 !\n");
+            fgetc(stdin);
+            continue;
+        }
+       
+        else if (gameBoard[0][column] != 0)
+        {
+            printf("Column %d is full !\n", column);
+        }
+    } while (column < 1 || column > 7 || gameBoard[0][column] != 0 || !column);
+
+    while (gameBoard[i+1][column] == 0 && i < 5)
+    {
+        i++;
+    }
+
+    gameBoard[i][column] = playerToken;
+    i = 0;
+    display(gameBoard);
+    printf("\n");
+    if(isWinner(playerToken) == 0){
+        botMove(gameBoard, playerToken);
+    }
+    else{
+        printf("Player %d wins !\n", playerToken);
+        exit(0);
+    }
+}
+
