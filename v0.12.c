@@ -1050,9 +1050,9 @@ void playerVsBot(int gameBoard[6][7], int playerToken){
             // if player 1 starts, the player will be asked to make a move.
             if (player1Start == 1)
             {
-                playerMove(gameBoard, playerToken);
+                playerMove(gameBoard,playerToken);
                 // if the player wins, the game will end.
-                if (checkWin(gameBoard, playerToken) == 1)
+                if (isWinner(playerToken) == 1)
                 {
                     printf("%s wins!", player1);
                     printf("\n");
@@ -1069,7 +1069,7 @@ void playerVsBot(int gameBoard[6][7], int playerToken){
             {
                 botMove(gameBoard, playerToken);
                 // if the bot wins, the game will end.
-                if (checkWin(gameBoard, playerToken) == 1)
+                if (isWinner(playerToken) == 1)
                 {
                     printf("%s wins!", bot);
                     printf("\n");
@@ -1090,7 +1090,7 @@ void playerVsBot(int gameBoard[6][7], int playerToken){
             {
                 playerMove(gameBoard, playerToken);
                 // if the player wins, the game will end.
-                if (checkWin(gameBoard, playerToken) == 1)
+                if (isWinner(playerToken) == 1)
                 {
                     printf("%s wins!", player1);
                     printf("\n");
@@ -1107,7 +1107,7 @@ void playerVsBot(int gameBoard[6][7], int playerToken){
             {
                 botMove(gameBoard, playerToken);
                 // if the bot wins, the game will end.
-                if (checkWin(gameBoard, playerToken) == 1)
+                if (isWinner(playerToken) == 1)
                 {
                     printf("%s wins!", bot);
                     printf("\n");
