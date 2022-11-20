@@ -41,7 +41,6 @@ double player2Time = 0;
          __typeof__ (b) _b = (b); \
       _a < _b ? _a : _b; })
 
-
 coin flipCoin();
 void display();
 bool isWinner();
@@ -64,7 +63,6 @@ int main()
   
     return 0;
 }
-
 // Function to flip a coin
     coin flipCoin()
         /*
@@ -81,7 +79,6 @@ int main()
         return TAILS;
     }
 }
-
 // Function to display board
 void display(int gameBoard[6][7])
 /*
@@ -100,7 +97,6 @@ Partition on an unpecified sized board: Failed
 Effects: returns a 2D array, being sandwiched between 2 lines of dashes. Above the 2D array, a sequence of line from 1 to 7 is printed to indicate the column numbers, respectively.
 */
 {
-   
     printf("\n");
     printf(" ");
     for (int n = 1; n < 7; n++)
@@ -149,8 +145,6 @@ bool isWinner(int playerToken)
     PlayerToken != 1 && != 2:
     Failure On All Partitions
 
- 
-
     | v |   | h | h | h | h |   |
     | v |   |   | ud|   |   |   |
     | v | dd| ud| dd|   |   | ud|
@@ -158,8 +152,6 @@ bool isWinner(int playerToken)
     | ud|   |   | dd| ud| dd|   |
     |   |   |   | ud| dd|   | dd|
    
-    */
-    /*
     Requires: The token number that is assinged to the player
     Effects: The gameboard is updated within every move made by each player. Simultaneously, we continously check if 4 tokens of the same player allign vertically, horizontally,
     or diagonally. If one of these conditions is satisfied, we return true, signifying that the player of the inputed token is the winner. False otherwise.
@@ -672,6 +664,17 @@ int hardMove(int gameBoard[6][7])
     Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
     in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
     to place the bot's token in, increasing the winning chance of the bot.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
     */
     int bestVal = -1000;
     int bestMove = -1;
@@ -704,6 +707,17 @@ int normalMove(int gameBoard[6][7])
     Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
     in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
     to place the bot's token in, making the winning chance of the bot and the player equally likely.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
     */
     int bestVal = -1000;
     int bestMove = -1;
@@ -736,6 +750,17 @@ int easyMove(int gameBoard[6][7])
     Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
     in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
     to place the bot's token in, decreasing the winning chance of the bot.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
     */
     int bestVal = -1000;
     int bestMove = -1;
@@ -768,6 +793,20 @@ void botMove(int gameBoard[6][7], int botToken)
     Effects: If the selected mode is easy (1), the bot places its token in the column number that is taken from the easyMove function and prints the updated gameBoard.
     If the selected mode is normal (2), the bot places its token in the column number that is taken from the normalMove function and prints the updated gameBoard.
     If the selected mode is hard (3), the bot places its token in the column number that is taken from the hardMove function and prints the updated gameBoard.
+
+    Testing Strategy: covers the Bot's move and the updated gameboard
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    Partition on botToken:
+        a- botToken = 1: 1 is displayed on the gameboard: Success (for playerAndBot 1)
+        b- botToken = 2: 2 is displayed on the gameboard: Success (for playerAndBot 2)
+        c- botToken = any real number: int and char: Success
+        d- botToken =  double and float: Fail
     */
     if (levelVal=1){
         int column = easyMove(gameBoard);
@@ -812,6 +851,17 @@ int isMovesLeft(int gameBoard[6][7])
     /* 
     Requires: 2-D array gameBoard 
     Effects: returns 1 if there are any moves left in the game or 0 otherwise.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
     */
     for (int i = 1; i < 8; i++)
     {
@@ -1002,12 +1052,9 @@ int evaluate(int gameBoard[6][7])
                 if (!((gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken) || (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)))
                 {
                     score += -10;
-                }
-
-            
+                } 
             }
         }
-
        // scoreArray[i]=score;
     }
     return score;
@@ -1060,6 +1107,19 @@ void playerVsBot(int gameBoard[6][7], int playerToken){
     he is asked to select another move within the proper bounds. Then, the botMove funtction is called to display the bot's move on the gameBoard. 
     The gameboard is updated and displayed to the user. At the end, the function declares the winner of the game.
 
+    Testing Strategy: covers the playerAndBot's move and the updated gameboard
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    Partition on playerToken:
+        a- playerToken = 1: 1 is displayed on the gameboard: Success (for playerAndBot 1)
+        b- playerToken = 2: 2 is displayed on the gameboard: Success (for playerAndBot 2)
+        c- playerToken = any real number: int and char: Success
+        d- playerToken =  double and float: Fail
     */
     //printf("Player %d's turn\n", playerToken);
     int column;
