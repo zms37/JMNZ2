@@ -22,10 +22,9 @@ int botStart = 0;
 int playerOrBot = 0;
 int playerToken = 0;
 int botToken = 0;
-int MAX = 100000;
-int MIN = -100000;
+int MAX = 1000;
+int MIN = -1000;
 int levelVal = 0;
-//int botStart = 0;
 clock_t startPlayer;
 clock_t endPlayer;
 double playerTime =0;
@@ -42,7 +41,6 @@ double player2Time = 0;
          __typeof__ (b) _b = (b); \
       _a < _b ? _a : _b; })
 
-
 coin flipCoin();
 void display();
 bool isWinner();
@@ -50,12 +48,11 @@ void startGame();
 void playerVsPlayer();
 void botMove (int gameBoard[6][7], int token);
 int evaluate(int gameBoard[6][7]);
-int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta);
+int miniMax(int gameBoard[6][7], int depth, int isMax, int alpha, int beta);
 int vsPlayerOrBot();
 int level();
 void playerVsBot();
 int isMovesLeft(int gameBoard[6][7]);
-int isMax(int scoreArray[7], int score);
 int easyMove(int gameBoard[6][7]);
 int normalMove(int gameBoard[6][7]);
 int hardMove(int gameBoard[6][7]);
@@ -66,7 +63,6 @@ int main()
   
     return 0;
 }
-
 // Function to flip a coin
     coin flipCoin()
         /*
@@ -83,14 +79,24 @@ int main()
         return TAILS;
     }
 }
-
 // Function to display board
 void display(int gameBoard[6][7])
+/*
+Testing Strategy:
+covers the size and the content of the gameboard 2D array
+
+Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+Partition on different sized board:
+    a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+    b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+Partition on negatively sized board: int gameBoard[-1][2]: Failed
+Partition on an unpecified sized board: Failed
+*/
     /*Requires: a 2D array consisting of 6 rows and 7 columns 
 Effects: returns a 2D array, being sandwiched between 2 lines of dashes. Above the 2D array, a sequence of line from 1 to 7 is printed to indicate the column numbers, respectively.
 */
 {
-   
     printf("\n");
     printf(" ");
     for (int n = 1; n < 7; n++)
@@ -122,10 +128,33 @@ Effects: returns a 2D array, being sandwiched between 2 lines of dashes. Above t
 // Winners
 //player token is 1 or 2
 bool isWinner(int playerToken)
-    /*
+/*
+    Requires: The token number that is assinged to the playerAndBot
+    Effects: The gameboard is updated within every move made by each playerAndBot. Simultaneously, we continously check if 4 tokens of the same playerAndBot allign vertically, horizontally,
+    or diagonally. If one of these conditions is satisfied, we return true, signafying that the playerAndBot of the inputed token is the winner. False otherwise.
+    
+    With PlayerToken = 1 or PlayerToken = 2: 
+
+    Partition on vertical column v: Success
+    Partition on horizontal row h: Success
+    Partition on upperward diagonal from column 4 to 7: Failure
+    Partition on downward diagonal from column 4 to 7: Failure
+    Partition on upperward diagonal from column 1 to 4: Success
+    Partition on downward diagonal from column 2 to 5: Success
+
+    PlayerToken != 1 && != 2:
+    Failure On All Partitions
+
+    | v |   | h | h | h | h |   |
+    | v |   |   | ud|   |   |   |
+    | v | dd| ud| dd|   |   | ud|
+    | v | ud| dd|   | dd| ud|   |
+    | ud|   |   | dd| ud| dd|   |
+    |   |   |   | ud| dd|   | dd|
+   
     Requires: The token number that is assinged to the player
     Effects: The gameboard is updated within every move made by each player. Simultaneously, we continously check if 4 tokens of the same player allign vertically, horizontally,
-    or diagonally. If one of these conditions is satisfied, we return true, signafying that the player of the inputed token is the winner. False otherwise.
+    or diagonally. If one of these conditions is satisfied, we return true, signifying that the player of the inputed token is the winner. False otherwise.
     */
 {
     int count = 0;
@@ -198,9 +227,13 @@ void tie(double player1Time, double player2Time)
     
     Effects: the method declares the winner by comparing the total time consumed by both players and prints the player's name that took the least time selecting their moves (If no more tokens remain). 
     In case both durations are equal, the game declares a tie.
+
+    Testing Strategy: covers the comparison of playerAndBot times
+    Partition on player1Time less than player2Time: playerAndBot 1 is the winner: Success
+    Partition on player1Time greater than player2Time: playerAndBot 2 is the winner: Success
+    Partition on player1Time equal to player2Time: unsolved tie: Success
+
     */
-    
-    
     // if the player 1 time is less than the player 2 time.
     if (player1Time < player2Time)
     {
@@ -230,12 +263,11 @@ void tie(double player1Time, double player2Time)
         printf("\n");
     }
 }
-// function to create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
+// function to create the players and their names and the tokens to be 1 for player 1 and 2 for player 2.
 void createPlayers(){
-   
-   /*
-   Requires: no paramters required by the method
-Effects: This method outputs the names of the first and second players, prints the who is player 1 and player 2, and assigns token 1 for player 1 and token 2 for player 2.
+/*
+    Requires: no paramters required by the method
+    Effects: If the variable playerOrBot equals 1, then this method outputs the names of the first and second players, prints who is player 1 and player 2, and assigns token 1 for player 1 and token 2 for player 2. Otherwise, this method only takes the name of player 1 and prints the player's name as player 1.
 */
  if(playerOrBot == 1){  
 
@@ -279,17 +311,23 @@ Effects: This method outputs the names of the first and second players, prints t
 //the function ends when the game is off.
 void startGame(){
     /*
-    Requires: No Direct Parameters to the function, but the global variables player 1 and player 2, representing both players' names, are required.
+    Requires: No Direct Parameters to the function, but the global variables playerOrBot and player 1 and player 2, representing both players' names, are required.
     
-    Effects: The players are created according to their inputed names. A coin flip determines which player starts, and their tokens are assigned accordingly. 
-    The players make their moves according to their respective turns, and the winner is announced if the conditions of the isWinner function are satisfied. If 
-    such conditions are not satisfied and the board is full, the tie function is called, comparing the times of the players, and selects a winner accordingly.
+    Effects: The function vsPlayerOrBot is called and its return value is assigned to the global variable playerOrBot to determine which playing mode is desired. 
+    If player1 v player2 mode is selected, then the players are created according to their inputed names. A coin flip determines which player starts, and their 
+    tokens are assigned accordingly. The players make their moves according to their respective turns, and the winner is announced if the conditions of the 
+    isWinner function are satisfied. If such conditions are not satisfied and the board is full, the tie function is called, comparing the times of the 
+    players, and selects a winner accordingly.
+    If player1 v bot mode is selected, then player1 is created according to its inputed name as well as the bot. A coin flip determines whether the player or the bot starts, and their 
+    tokens are assigned accordingly. The players make their moves according to their respective turns, calling the playerVsPlayer and the botMove functions, and the winner is announced if the conditions of the 
+    isWinner function are satisfied. If such conditions are not satisfied and the board is full, the tie function is called, comparing the times of the 
+    player and the bot, and selects a winner accordingly. 
     */
    
    playerOrBot = vsPlayerOrBot();
-    //use vsPlayerOrBot to determine which playing mood 
+    //use vsPlayerOrBot to determine which playing mode 
     if(playerOrBot == 1){
-        // create the players and their names and the tokins to be 1 for player 1 and 2 for player 2.
+        // create the players and their names and the tokens to be 1 for player 1 and 2 for player 2.
         createPlayers();
         //determine which turn is it.
         int turn = 0;
@@ -297,9 +335,8 @@ void startGame(){
         // set the game to be on.
         int gameOn = 1;
         //player 1 and player 2 time.
-
         int move = 0;
-        // set the truns for the players and save the truns in variables.
+        // set the turns for the players and save the turns in variables.
         srand(time(NULL));
         flipCoin();
         if (flipCoin() == HEADS)
@@ -310,8 +347,6 @@ void startGame(){
         }
         else
         {
-        
-            
             player2Start = 1;
             printf("%s is red and %s is yellow.", player2, player1);
             printf("\n");
@@ -370,8 +405,6 @@ void startGame(){
                     printf("%s won!!!!!!!\n", player2);
                     break;
                 }
-
-
                 playerVsPlayer(player1, 2);
                 moves++;
                 player1Time +=playerTime;
@@ -386,7 +419,6 @@ void startGame(){
                     break;
                 }
             }
-            
             // if the game is a tie.
             if (moves == 42)
             {
@@ -419,8 +451,6 @@ void startGame(){
         }
         else
         {
-        
-            
             botStart = 1;
             printf("%s is red and %s is yellow.\n", bot, player1);
             playerToken = 2;
@@ -463,7 +493,6 @@ void startGame(){
                     break;
                 }
             }
-            
             // if the player 2 turn is true.
             else if (botStart == 1)
             {
@@ -481,9 +510,8 @@ void startGame(){
                     printf("%s won!!!!!!!\n", bot);
                     break;
                 }
-
-            
-                playerVsPlayer(player1, playerToken);
+            }
+            playerVsPlayer(player1, playerToken);
                 moves++;
                 player1Time +=playerTime;
                 playerTime =0;
@@ -496,13 +524,8 @@ void startGame(){
                     printf("%s won!!!!!!!\n", player1);
                     break;
                 }
-                
-            }
-
         }
-    }
-
-        
+    }   
 }
 
 //function for players turn:
@@ -514,7 +537,17 @@ void playerVsPlayer(char player[10], int playerToken)
     We call the player to select the column number he wants to insert his token in. As the player selects his move, the time taken by him to input his move is measured.
     If the column selected by the player is out of the bounds of the array, he is asked to select another move within the proper bounds. The gameboard is updated and
     displayed to the user.
-    
+
+    Testing Strategy: covers the playerAndBot's move and the updated gameboard
+    Partition on name:
+        a- of size greater than 10: Failed
+        b- of size = 10: Success
+        c- of size < 10: Success
+    Partition on playerToken:
+        a- playerToken = 1: 1 is displayed on the gameboard: Success (for playerAndBot 1)
+        b- playerToken = 2: 2 is displayed on the gameboard: Success (for playerAndBot 2)
+        c- playerToken = any real number: int and char: Success
+        d- playerToken =  double and float: Fail
     */
 {
     int column;
@@ -550,9 +583,26 @@ void playerVsPlayer(char player[10], int playerToken)
     printf("\n");
 }
 // miniMax is a recursive function that implements the miniMax algorithm to help find the best move.
-int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta)
+int miniMax(int gameBoard[6][7], int depth, int isMaximizing, int alpha, int beta)
 {
-   
+    /* 
+    Requires: 2-D gameBoard array, depth of the miniMax algorithm, isMaximizing, alpha, and beta variables as parameters.
+    Effects: The miniMax function is a recursive function that implements the miniMax algorithm to help find the best move of either the player or the bot from 
+    the returned best variable. Recursively calling the function and comparing alpha max (that is the result of the maximum best move) with beta (that is less than alpha) 
+    in the case of the availability of a maximum score, the function returns the best score. Otherwise, the function returns the minimum score by comparing the beta with the minimum if the best score from the recursive call of the function.
+
+    Testing Strategy: covers updated gameboard, depth or miniMax algorithm, isMAximizing, alpha, and beta to find the best move
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    Partition on depth, isMaximizing, alpha, and beta, all denoted as variables:
+        a- Variables = any real number: int and char: Success
+        b- Variables =  double and float: Fail 
+    */
     int score = evaluate(gameBoard); 
     if (score == 10)
     {
@@ -566,8 +616,8 @@ int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta
     {
         return 0;
     }
-    ismaxizing = isMax(scoreArray, score);
-    if (ismaxizing == 1 )
+    isMaximizing = isMax(scoreArray, score);
+    if (isMaximizing == 1 )
     {
         int best = -100000;
         for (int i = 1; i < 8; i++)
@@ -580,7 +630,7 @@ int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta
                     j++;
                 }
                 gameBoard[j][i] = 1;
-                best = max(best, miniMax(gameBoard, depth+1, !ismaxizing , alpha, beta));
+                best = max(best, miniMax(gameBoard, depth+1, !isMaximizing , alpha, beta));
                 gameBoard[j][i] = 0;
                 alpha = max(alpha, best);
                 if (beta <= alpha)
@@ -604,7 +654,7 @@ int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta
                     j++;
                 }
                 gameBoard[j][i] = 2;
-                best = min(best, miniMax(gameBoard, depth+1, !ismaxizing , alpha, beta));
+                best = min(best, miniMax(gameBoard, depth+1, !isMaximizing , alpha, beta));
                 gameBoard[j][i] = 0;
                 beta = min(beta, best);
                 if (beta <= alpha)
@@ -616,9 +666,22 @@ int miniMax(int gameBoard[6][7], int depth, int ismaxizing , int alpha, int beta
         return best;
     }
 }
-//bool function isMax that takes the scoreArray and the score and check if the score is the max score.
 int isMax(int scoreArray[7], int score)
-{
+{/*
+Requires: scoreArray of size 7 and a score integer
+Effects: This function takes the scoreArray and the score and checks if the score is the max score.
+
+Testing strategy: covers the size of the scoreArray and the integer score.
+Partition on an empty board of size 7: Success
+Partition on a filled in board of size 7: Success
+Partition on negatively sized board: int gameBoard[-1][2]: Failed
+Partition on an unspecified sized board: Failed
+Partition on different sized board:
+        a- Size is less than the required input array size (size = 5): Failed
+        b- Size is greater than the required input array size (size = 9): Success (board is displayed but elements that are out of range are not displayed)
+Partition on: Positive/ negative integer or char: Success
+Partition on: Positive/ negative float or double: Fail
+*/
     for (int i = 0; i < 7; i++)
     {
         if (scoreArray[i] == score)
@@ -631,7 +694,24 @@ int isMax(int scoreArray[7], int score)
 // hard function that find the best move for the bot to win.
 int hardMove(int gameBoard[6][7])
 {
-    int bestVal = -100000;
+    /* 
+    Requires: the gameBoard 2-D array to place the bestMove of the bot in the according column number in the gameBoard. 
+    Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
+    in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
+    to place the bot's token in, increasing the winning chance of the bot.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unspecified sized board: Failed
+    */
+    int bestVal = -1000;
     int bestMove = -1;
     for (int i = 1; i < 8; i++)
     {
@@ -657,7 +737,24 @@ int hardMove(int gameBoard[6][7])
 // function normal that finds the second best move for the bot.
 int normalMove(int gameBoard[6][7])
 {
-    int bestVal = -100000;
+    /* 
+    Requires: the gameBoard 2-D array to place the bestMove of the bot in the according column number in the gameBoard. 
+    Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
+    in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
+    to place the bot's token in, making the winning chance of the bot and the player equally likely.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    */
+    int bestVal = -1000;
     int bestMove = -1;
     for (int i = 1; i < 8; i++)
     {
@@ -683,7 +780,24 @@ int normalMove(int gameBoard[6][7])
 // function easy that finds the third best move for the bot.
 int easyMove(int gameBoard[6][7])
 {
-    int bestVal = -100000;
+    /* 
+    Requires: the gameBoard 2-D array to place the bestMove of the bot in the according column number in the gameBoard. 
+    Effects: This function returns the best location for the bot to drop its token in the gameBoard while comparing the moveVal, 
+    in which the return value of the miniMax function is assigned to it, with the bestVal, and returns the best column number (bestMove) 
+    to place the bot's token in, decreasing the winning chance of the bot.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    */
+    int bestVal = -1000;
     int bestMove = -1;
     for (int i = 1; i < 8; i++)
     {
@@ -709,6 +823,26 @@ int easyMove(int gameBoard[6][7])
 // function to make the bot move
 void botMove(int gameBoard[6][7], int botToken)
 {
+    /* 
+    Requires: 2-D gameBoard array and the botToken to update the gameBoard with the bot move.
+    Effects: If the selected mode is easy (1), the bot places its token in the column number that is taken from the easyMove function and prints the updated gameBoard.
+    If the selected mode is normal (2), the bot places its token in the column number that is taken from the normalMove function and prints the updated gameBoard.
+    If the selected mode is hard (3), the bot places its token in the column number that is taken from the hardMove function and prints the updated gameBoard.
+
+    Testing Strategy: covers the Bot's move and the updated gameboard
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    Partition on botToken:
+        a- botToken = 1: 1 is displayed on the gameboard: Success (for playerAndBot 1)
+        b- botToken = 2: 2 is displayed on the gameboard: Success (for playerAndBot 2)
+        c- botToken = any real number: int and char: Success
+        d- botToken =  double and float: Fail
+    */
     if (levelVal=1){
         int column = easyMove(gameBoard);
         int i = 0;
@@ -749,6 +883,21 @@ void botMove(int gameBoard[6][7], int botToken)
 // function to check if there are any moves left
 int isMovesLeft(int gameBoard[6][7])
 {
+    /* 
+    Requires: 2-D array gameBoard 
+    Effects: returns 1 if there are any moves left in the game or 0 otherwise.
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    */
     for (int i = 1; i < 8; i++)
     {
         if (gameBoard[0][i] == 0)
@@ -760,13 +909,24 @@ int isMovesLeft(int gameBoard[6][7])
 }
 // function to evaluate the board
 int evaluate(int gameBoard[6][7])
-{
+{ 
+    /*
+    Requires: 2-D array gameBoard 
+    Effects: The method evaluates gameBoard and returns the score evaluated upon each move. 
+
+    Testing Strategy:
+    covers the size and the content of the gameboard 2D array
+
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed 
+    */
+
     int score = 0;
-    // // mepty the scoreArray
-    for (int k = 0; k < 64; k++)
-    {
-        scoreArray[k] = 0;
-    }
      for (int i = 0; i < 6; i++)
      {
         for (int j = 1; j < 8; j++)
@@ -775,102 +935,102 @@ int evaluate(int gameBoard[6][7])
             {
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken && gameBoard[i][j+3] == playerToken)
                 {
-                    score += 20;
+                    score += 5;
                 }
                 if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken && gameBoard[i+3][j] == playerToken)
                 {
-                    score += 20;
+                    score += 5;
                 }
                 if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken && gameBoard[i+3][j+3] == playerToken)
                 {
-                    score += 20;
+                    score += 5;
                 }
                 if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken && gameBoard[i+3][j-3] == playerToken)
                 {
-                    score += 20;
+                    score += 5;
                 }
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
                 {
-                    score += 10;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken)
                 {
-                    score += 10;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken)
                 {
-                    score += 10;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)
                 {
-                    score += 10;
+                    score += 2;
                 }
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
                 {
-                    score += 10;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j] == playerToken)
                 {
-                    score += 5;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j+1] == playerToken)
                 {
-                    score += 5;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j-1] == playerToken)
                 {
-                    score += 5;
+                    score += 1;
                 }
             }
             if (gameBoard[i][j] == botToken)
             {
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken && gameBoard[i][j+3] == botToken)
                 {
-                    score += 6;
+                    score += 3;
                 }
                 if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken && gameBoard[i+3][j] == botToken)
                 {
-                    score += 6;
+                    score += 3;
                 }
                 if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken && gameBoard[i+3][j+3] == botToken)
                 {
-                    score += 6;
+                    score += 3;
                 }
                 if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken && gameBoard[i+3][j-3] == botToken)
                 {
-                    score += 6;
+                    score += 3;
                 }
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken)
                 {
-                    score += 4;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken)
                 {
-                    score += 4;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken)
                 {
-                    score += 4;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken)
                 {
-                    score += 4;
+                    score += 1;
                 }
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken)
                 {
-                    score += 2;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j] == botToken)
                 {
-                    score += 2;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j+1] == botToken)
                 {
-                    score += 2;
+                    score += 1;
                 }
                 if (gameBoard[i+1][j-1] == botToken)
                 {
-                    score += 2;
+                    score += 1;
                 }
             }
             if (gameBoard[i][j] == playerToken || gameBoard[i][j])
@@ -893,19 +1053,19 @@ int evaluate(int gameBoard[6][7])
                 }
                 if (!(gameBoard[i][j+1] == playerToken || gameBoard[i][j+1] == botToken))
                 {
-                    score += -10;
+                    score += -5;
                 }
                 if (!(gameBoard[i+1][j] == playerToken || gameBoard[i+1][j] == botToken))
                 {
-                    score += -10;
+                    score += -5;
                 }
                 if (!(gameBoard[i+1][j+1] == playerToken || gameBoard[i+1][j+1] == botToken))
                 {
-                    score += -10;
+                    score += -5;
                 }
                 if (!(gameBoard[i+1][j-1] == playerToken || gameBoard[i+1][j-1] == botToken))
                 {
-                    score += -10;
+                    score += -5;
                 }
                 if ((gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken) || (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken))
                 {
@@ -925,43 +1085,33 @@ int evaluate(int gameBoard[6][7])
                 }
                  if (!((gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken) || (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)))
                 {
-                    score += -20;
+                    score += -10;
                 }
                 if (!((gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken) || (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken)))
                 {
-                    score += -20;
+                    score += -10;
                 }
                 if (!((gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken) || (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken)))
                 {
-                    score += -20;
+                    score += -10;
                 }
                 if (!((gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken) || (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)))
                 {
-                    score += -20;
-                }
-
-            
+                    score += -10;
+                } 
             }
         }
-
-       scoreArray[i]=score;
+       // scoreArray[i]=score;
     }
-    //get the max value in the scoreArray
-    int max = scoreArray[0];
-    for (int i = 0; i < 7; i++)
-    {
-        if (scoreArray[i] > max)
-        {
-            max = scoreArray[i];
-        }
-    }
-    //set the max to be score and return score.
-    score = max;
     return score;
 }
 //int levelVal a function that asks the user what levelVal they want to play, Esay is 1, Normal is 2, Hard is 3.
 int level()
 {
+    /* 
+    Requires: no parameters
+    Effects: returns the player's choice of selecting the easy, normal, or hard level.
+    */ 
     int choice;
     printf("Please select a level: \n");
     printf("1. Easy\n");
@@ -972,6 +1122,10 @@ int level()
 }
 //boolean function vsPlayerOrBot to take the input if the user wants Player vs Player or Player vs computer.
 int vsPlayerOrBot(){
+    /* 
+    Requires: no parameters
+    Effects: returns the player's choice of selecting to either play versus another player or the bot.
+    */
     int choice;
     printf("1. Player vs Player\n");
     printf("2. Player vs Computer\n");
@@ -992,6 +1146,27 @@ int vsPlayerOrBot(){
 }
 // a function playerVsBot that functions similarly to PlayerVsPlayer.
 void playerVsBot(int gameBoard[6][7], int playerToken){
+    /* 
+    Requires: The 2-D array gameBoard, and the player token assigned to player 1 that indicates the token number 1 or 2.
+    Effects: 
+    We call the player to select the column number he wants to insert his token in. If the column selected by the player is out of the bounds of the array, 
+    he is asked to select another move within the proper bounds. Then, the botMove funtction is called to display the bot's move on the gameBoard. 
+    The gameboard is updated and displayed to the user. At the end, the function declares the winner of the game.
+
+    Testing Strategy: covers the playerAndBot's move and the updated gameboard
+    Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
+    Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
+    Partition on different sized board:
+        a- Size is less than the required input array size (row: < 6, column < 7): int gameBoard[2][3]: Failed
+        b- Size is greater than the required input array size (row: > 7, column > 8): int gameBoard[10][10]: Success (board is displayed but elements that are in rows > 6 , columns > 7 are not displayed)
+    Partition on negatively sized board: int gameBoard[-1][2]: Failed
+    Partition on an unpecified sized board: Failed
+    Partition on playerToken:
+        a- playerToken = 1: 1 is displayed on the gameboard: Success (for playerAndBot 1)
+        b- playerToken = 2: 2 is displayed on the gameboard: Success (for playerAndBot 2)
+        c- playerToken = any real number: int and char: Success
+        d- playerToken =  double and float: Fail
+    */
     //printf("Player %d's turn\n", playerToken);
     int column;
     int i = 0;
