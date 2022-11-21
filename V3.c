@@ -53,6 +53,7 @@ int vsPlayerOrBot();
 int level();
 void playerVsBot();
 int isMovesLeft(int gameBoard[6][7]);
+int isMax(int scoreArray[7], int score);
 int easyMove(int gameBoard[6][7]);
 int normalMove(int gameBoard[6][7]);
 int hardMove(int gameBoard[6][7]);
@@ -909,7 +910,7 @@ int isMovesLeft(int gameBoard[6][7])
 }
 // function to evaluate the board
 int evaluate(int gameBoard[6][7])
-{ 
+
     /*
     Requires: 2-D array gameBoard 
     Effects: The method evaluates gameBoard and returns the score evaluated upon each move. 
@@ -925,8 +926,13 @@ int evaluate(int gameBoard[6][7])
     Partition on negatively sized board: int gameBoard[-1][2]: Failed
     Partition on an unpecified sized board: Failed 
     */
-
+{
     int score = 0;
+    // // mepty the scoreArray
+    for (int k = 0; k < 64; k++)
+    {
+        scoreArray[k] = 0;
+    }
      for (int i = 0; i < 6; i++)
      {
         for (int j = 1; j < 8; j++)
@@ -935,102 +941,102 @@ int evaluate(int gameBoard[6][7])
             {
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken && gameBoard[i][j+3] == playerToken)
                 {
-                    score += 5;
+                    score += 20;
                 }
                 if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken && gameBoard[i+3][j] == playerToken)
                 {
-                    score += 5;
+                    score += 20;
                 }
                 if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken && gameBoard[i+3][j+3] == playerToken)
                 {
-                    score += 5;
+                    score += 20;
                 }
                 if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken && gameBoard[i+3][j-3] == playerToken)
                 {
-                    score += 5;
+                    score += 20;
                 }
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
                 {
-                    score += 2;
+                    score += 10;
                 }
                 if (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken)
                 {
-                    score += 2;
+                    score += 10;
                 }
                 if (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken)
                 {
-                    score += 2;
+                    score += 10;
                 }
                 if (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)
                 {
-                    score += 2;
+                    score += 10;
                 }
                 if (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)
                 {
-                    score += 2;
+                    score += 10;
                 }
                 if (gameBoard[i+1][j] == playerToken)
                 {
-                    score += 1;
+                    score += 5;
                 }
                 if (gameBoard[i+1][j+1] == playerToken)
                 {
-                    score += 1;
+                    score += 5;
                 }
                 if (gameBoard[i+1][j-1] == playerToken)
                 {
-                    score += 1;
+                    score += 5;
                 }
             }
             if (gameBoard[i][j] == botToken)
             {
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken && gameBoard[i][j+3] == botToken)
                 {
-                    score += 3;
+                    score += 6;
                 }
                 if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken && gameBoard[i+3][j] == botToken)
                 {
-                    score += 3;
+                    score += 6;
                 }
                 if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken && gameBoard[i+3][j+3] == botToken)
                 {
-                    score += 3;
+                    score += 6;
                 }
                 if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken && gameBoard[i+3][j-3] == botToken)
                 {
-                    score += 3;
+                    score += 6;
                 }
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken)
                 {
-                    score += 1;
+                    score += 4;
                 }
                 if (gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken)
                 {
-                    score += 1;
+                    score += 4;
                 }
                 if (gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken)
                 {
-                    score += 1;
+                    score += 4;
                 }
                 if (gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken)
                 {
-                    score += 1;
+                    score += 4;
                 }
                 if (gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken)
                 {
-                    score += 1;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j] == botToken)
                 {
-                    score += 1;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j+1] == botToken)
                 {
-                    score += 1;
+                    score += 2;
                 }
                 if (gameBoard[i+1][j-1] == botToken)
                 {
-                    score += 1;
+                    score += 2;
                 }
             }
             if (gameBoard[i][j] == playerToken || gameBoard[i][j])
@@ -1053,19 +1059,19 @@ int evaluate(int gameBoard[6][7])
                 }
                 if (!(gameBoard[i][j+1] == playerToken || gameBoard[i][j+1] == botToken))
                 {
-                    score += -5;
+                    score += -10;
                 }
                 if (!(gameBoard[i+1][j] == playerToken || gameBoard[i+1][j] == botToken))
                 {
-                    score += -5;
+                    score += -10;
                 }
                 if (!(gameBoard[i+1][j+1] == playerToken || gameBoard[i+1][j+1] == botToken))
                 {
-                    score += -5;
+                    score += -10;
                 }
                 if (!(gameBoard[i+1][j-1] == playerToken || gameBoard[i+1][j-1] == botToken))
                 {
-                    score += -5;
+                    score += -10;
                 }
                 if ((gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken) || (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken))
                 {
@@ -1085,24 +1091,38 @@ int evaluate(int gameBoard[6][7])
                 }
                  if (!((gameBoard[i][j+1] == botToken && gameBoard[i][j+2] == botToken) || (gameBoard[i][j+1] == playerToken && gameBoard[i][j+2] == playerToken)))
                 {
-                    score += -10;
+                    score += -20;
                 }
                 if (!((gameBoard[i+1][j] == botToken && gameBoard[i+2][j] == botToken) || (gameBoard[i+1][j] == playerToken && gameBoard[i+2][j] == playerToken)))
                 {
-                    score += -10;
+                    score += -20;
                 }
                 if (!((gameBoard[i+1][j+1] == botToken && gameBoard[i+2][j+2] == botToken) || (gameBoard[i+1][j+1] == playerToken && gameBoard[i+2][j+2] == playerToken)))
                 {
-                    score += -10;
+                    score += -20;
                 }
                 if (!((gameBoard[i+1][j-1] == botToken && gameBoard[i+2][j-2] == botToken) || (gameBoard[i+1][j-1] == playerToken && gameBoard[i+2][j-2] == playerToken)))
                 {
-                    score += -10;
-                } 
+                    score += -20;
+                }
+
+            
             }
         }
-       // scoreArray[i]=score;
+
+       scoreArray[i]=score;
     }
+    //get the max value in the scoreArray
+    int max = scoreArray[0];
+    for (int i = 0; i < 7; i++)
+    {
+        if (scoreArray[i] > max)
+        {
+            max = scoreArray[i];
+        }
+    }
+    //set the max to be score and return score.
+    score = max;
     return score;
 }
 //int levelVal a function that asks the user what levelVal they want to play, Esay is 1, Normal is 2, Hard is 3.
