@@ -580,6 +580,7 @@ int miniMax(int gameBoard[6][7], int depth, int isMaximizing, int alpha, int bet
     Effects: The miniMax function is a recursive function that implements the miniMax algorithm to help find the best move of either the player or the bot from 
     the returned best variable. Recursively calling the function and comparing alpha max (that is the result of the maximum best move) with beta (that is less than alpha) 
     in the case of the availability of a maximum score, the function returns the best score. Otherwise, the function returns the minimum score by comparing the beta with the minimum if the best score from the recursive call of the function.
+            
     Testing Strategy: covers updated gameboard, depth or miniMax algorithm, isMAximizing, alpha, and beta to find the best move
     Partition on an empty board of size row: 6, column: 7 (filled with zeros): Success
     Partition on a filled in board of size row: 6, column: 7 (filled with non zero elements): Success 
@@ -589,8 +590,10 @@ int miniMax(int gameBoard[6][7], int depth, int isMaximizing, int alpha, int bet
     Partition on negatively sized board: int gameBoard[-1][2]: Failed
     Partition on an unpecified sized board: Failed
     Partition on depth, isMaximizing, alpha, and beta, all denoted as variables:
-        a- Variables = any real number: int and char: Success
-        b- Variables =  double and float: Fail 
+        a- depth = any real number: int and char: Success
+        b- isMaximizing = 0 and 1: Success, otherwise: Failure
+        c- alpha > beta: Success , alpha < beta: Failure, alpha = beta : Failure
+        
     */
    
     int score = evaluate(gameBoard);
